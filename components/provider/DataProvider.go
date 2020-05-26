@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"github.com/gomodule/redigo/redis"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
@@ -11,6 +12,11 @@ import (
 var Cache redis.Conn
 var Coll *mongo.Collection
 var mongoURI = ""
+
+type User struct {
+	_id string
+	Username string
+}
 
 func GetUserByCookie(w http.ResponseWriter, r *http.Request) string {
 
@@ -34,6 +40,12 @@ func GetUserByCookie(w http.ResponseWriter, r *http.Request) string {
 	s, _ := redis.String(Cache.Do("GET", "sessions/" + sessionToken))
 
 	return s
+}
+
+func GetUser(name string) User {
+	var res User
+	_ = Coll.FindOne(context.TODO(), bson.D{{"username", name}}).Decode(&res)
+	return res
 }
 
 

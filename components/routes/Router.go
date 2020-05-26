@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"html"
@@ -14,6 +13,11 @@ import (
 	. "webpanel/components/provider"
 )
 
+type CookieUser struct {
+	Username string
+	Password string
+}
+
 func GetMD5Hash(text string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(text))
@@ -22,19 +26,19 @@ func GetMD5Hash(text string) string {
 
 /* src */
 func Home(w http.ResponseWriter, r *http.Request)  {
-	user := GetUserByCookie(w, r)
+	cookieUser := GetUserByCookie(w, r)
 
-	if user == "none" {
+	if cookieUser == "none" {
 		LoginPage(w, r)
 		return
 	}
 
-	w.Write([]byte(fmt.Sprint("Welcome ", user, "!")))
-}
+	// todo GetUser MongoDB
+	user := GetUser(cookieUser)
 
-type user struct {
-	Username string
-	Password string
+	t, _ := template.ParseFiles("./views/index.html")
+
+	t.Execute(w, user)
 }
 
 func LoginPage(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +51,8 @@ func LoginPage(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+
+
 func LoginHandler(w http.ResponseWriter, r *http.Request)  {
 
 	if r.Method != "POST" {
@@ -58,8 +64,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request)  {
 	username := html.EscapeString(r.FormValue("username"))
 	password := GetMD5Hash(html.EscapeString(r.FormValue("password")))
 
-	var res user
-	e := Coll.FindOne(context.TODO(), bson.D{{"_id", username}}).Decode(&res)
+	var res CookieUser
+	e := Coll.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&res)
 
 	if e != nil {
 		//w.WriteHeader(http.StatusBadRequest)
