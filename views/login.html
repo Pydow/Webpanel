@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bitte einloggen</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/styles/login.css">
+</head>
+
+<body style="background-color: rgb(42, 41, 41);">
+<div class="container" style="height: 100%">
+    <div class="panel">
+        <form action="/handle/login" method="post">
+        <h1>Authentifizierung Erforderlich</h1>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" name="username">
+        </div>
+        <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" id="pwd" name="password">
+        </div>
+        <button type="submit" class="btn btn-default btn-light">Einloggen</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
